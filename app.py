@@ -1,71 +1,58 @@
 from flask import Flask, render_template, request, redirect, session
 app = Flask(__name__)
 app.secret_key = "secret123"
-# Stockage temporaire (mémoire)
-users = {
-    "admin": "1234"
-}
-messages = []  # Liste des messages
-# PAGE LOGIN
+users = {"admin": "1234"}
+messages = []
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        if username in users and users[username] == password:
-            session["user"] = username
+        u = request.form["username"]
+        p = request.form["password"]
+        if u in users and users[u] == p:
+            session["user"] = u
             return redirect("/chat")
         return "Erreur connexion"
     return render_template("login.html")
-# PAGE REGISTER
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        if username in users:
-            return "Utilisateur existe déjà"
-        users[username] = password
+        u = request.form["username"]
+        p = request.form["password"]
+        if u in users:
+            return "Utilisateur existe"
+        users[u] = p
         return redirect("/")
     return render_template("register.html")
-# PAGE CHAT
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
     if "user" not in session:
         return redirect("/")
-    current_user = session["user"]
-    selected_user = request.args.get("user")
-    # envoyer message
+    current = session["user"]
+    selected = request.args.get("user")
     if request.method == "POST":
         msg = request.form["message"]
         receiver = request.form["receiver"]
-        messages.append({
-            "sender": current_user,
-            "receiver": receiver,
-            "text": msg
-        })
-    # filtrer messages entre 2 personnes
-    filtered_messages = []
-    if selected_user:
+        if receiver:
+            messages.append({
+                "sender": current,
+                "receiver": receiver,
+                "text": msg
+            })
+    chat_messages = []
+    if selected:
         for m in messages:
             if (
-                (m["sender"] == current_user and m["receiver"] == selected_user)
+                (m["sender"] == current and m["receiver"] == selected)
                 or
-                (m["sender"] == selected_user and m["receiver"] == current_user)
+                (m["sender"] == selected and m["receiver"] == current)
             ):
-                filtered_messages.append(m)
-    return render_template(
-        "chat.html",
-        users=users,
-        current=current_user,
-        selected_user=selected_user,
-        messages=filtered_messages
-    )
-# LOGOUT
+                chat_messages.append(m)
+    return render_template("chat.html",
+                           users=users,
+                           current=current,
+                           selected_user=selected,
+                           messages=chat_messages)
 @app.route("/logout")
 def logout():
-    session.pop("user", None)
+    session.clear()
     return redirect("/")
-# LANCEMENT
-if __name__ == "__main__":
-    app.run(debug=True)
