@@ -7,7 +7,7 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
         # ⚠️ Test simple (tu peux changer)
-        if username == "admin" and password == "1234":
+        if username == "KIKELA" and password == "1234":
             return redirect(url_for('interface'))
         else:
             return "Erreur connexion"
