@@ -1,43 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-<style>
-body { display:flex; font-family:Arial; }
-.users {
-    width:200px;
-    background:#eee;
-    padding:10px;
-}
-.chat {
-    flex:1;
-    padding:10px;
-}
-.msg {
-    background:#d1e7dd;
-    margin:5px;
-    padding:8px;
-    border-radius:5px;
-}
-</style>
-</head>
-<body>
-<div class="users">
-<h3>Utilisateurs</h3>
-{% for u in users %}
-    <div>{{ u[0] }}</div>
-{% endfor %}
+<div style="display:flex">
+<!-- LISTE USERS -->
+<div style="width:30%; background:#eee; padding:10px">
+    <h3>Utilisateurs</h3>
+    {% for u in users %}
+        {% if u != current %}
+            <a href="/chat?user={{u}}">{{u}}</a><br>
+        {% endif %}
+    {% endfor %}
 </div>
-<div class="chat">
-<h2>Bienvenue {{ username }}</h2>
-{% for m in messages %}
-    <div class="msg">
-        <b>{{ m[0] }}</b>: {{ m[1] }}
-    </div>
-{% endfor %}
-<form action="/send" method="POST">
-    <input name="message">
-    <button>Envoyer</button>
-</form>
+<!-- CHAT -->
+<div style="width:70%; padding:10px">
+    <h2>Bienvenue {{current}}</h2>
+    {% if selected_user %}
+        <h3>Discussion avec {{selected_user}}</h3>
+        <div style="background:#ddd; padding:10px; height:200px; overflow:auto">
+            {% for m in messages %}
+                <p><b>{{m.sender}}</b>: {{m.text}}</p>
+            {% endfor %}
+        </div>
+        <form method="POST">
+            <input type="hidden" name="receiver" value="{{selected_user}}">
+            <input name="message" placeholder="Message">
+            <button type="submit">Envoyer</button>
+        </form>
+    {% else %}
+        <p>👉 Clique sur un utilisateur</p>
+    {% endif %}
 </div>
-</body>
-</html>
+</div>
