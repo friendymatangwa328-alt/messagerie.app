@@ -1,67 +1,71 @@
 from flask import Flask, render_template, request, redirect, session
 app = Flask(__name__)
 app.secret_key = "secret123"
+# Base de données simple
 users = {"admin": "1234"}
 messages = []
+# ================= LOGIN =================
 @app.route("/", methods=["GET", "POST"])
 def login():
-    try:
-        if request.method == "POST":
-            u = request.form.get("username")
-            p = request.form.get("password")
-            if u in users and users[u] == p:
-                session["user"] = u
-                return redirect("/chat")
-            return "Erreur connexion"
-        return render_template("login.html")
-    except Exception as e:
-        return str(e)
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if username in users and users[username] == password:
+            session["user"] = username
+            return redirect("/chat")
+        else:
+            return "Erreur de connexion"
+    return render_template("login.html")
+# ================= REGISTER =================
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    try:
-        if request.method == "POST":
-            u = request.form.get("username")
-            p = request.form.get("password")
-            if u in users:
-                return "Utilisateur existe"
-            users[u] = p
-            return redirect("/")
-        return render_template("register.html")
-    except Exception as e:
-        return str(e)
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if username in users:
+            return "Utilisateur existe déjà"
+        users[username] = password
+        return redirect("/")
+    return render_template("register.html")
+# ================= CHAT =================
 @app.route("/chat", methods=["GET", "POST"])
 def chat():
-    try:
-        if "user" not in session:
-            return redirect("/")
-        current = session["user"]
-        selected = request.args.get("user")
-        if request.method == "POST":
-            msg = request.form.get("message")
-            receiver = request.form.get("receiver")
-            if msg and receiver:
-                messages.append({
-                    "sender": current,
-                    "receiver": receiver,
-                    "text": msg
-                })
-        chat_messages = []
-        if selected:
-            for m in messages:
-                if (
-                    (m["sender"] == current and m["receiver"] == selected)
-                    or
-                    (m["sender"] == selected and m["receiver"] == current)
-                ):
-                    chat_messages.append(m)
-        return render_template("chat.html",
-                               users=users,
-                               current=current,
-                               selected_user=selected,
-                               messages=chat_messages)
-    except Exception as e:
-        return str(e)
+    if "user" not in session:
+        return redirect("/")
+    current_user = session["user"]
+    selected_user = request.args.get("user")
+    # envoyer message
+    if request.method == "POST":
+        message = request.form.get("message")
+        receiver = request.form.get("receiver")
+        if message and receiver:
+            messages.append({
+                "sender": current_user,
+                "receiver": receiver,
+                "text": message
+            })
+    # filtrer messages
+    chat_messages = []
+    if selected_user:
+        for m in messages:
+            if (
+                (m["sender"] == current_user and m["receiver"] == selected_user)
+                or
+                (m["sender"] == selected_user and m["receiver"] == current_user)
+            ):
+                chat_messages.append(m)
+    return render_template(
+        "chat.html",
+        users=users,
+        current=current_user,
+        selected_user=selected_user,
+        messages=chat_messages
+    )
+# ================= LOGOUT =================
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
+# ================= RUN =================
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
