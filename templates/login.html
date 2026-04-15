@@ -1,12 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
 <h2>Connexion</h2>
-<form action="/login" method="post">
-    <input name="user" placeholder="Nom"><br>
-    <input name="pwd" placeholder="Mot de passe"><br>
-    <button>Connexion</button>
+<form method="POST">
+    <input type="text" name="username" placeholder="Nom"><br><br>
+    <input type="password" name="password" placeholder="Mot de passe"><br><br>
+    <button type="submit">Entrer</button>
 </form>
-<h2>Inscription</h2>
-<form action="/register" method="post">
-    <input name="user" placeholder="Nom"><br>
-    <input name="pwd" placeholder="Mot de passe"><br>
-    <button>Créer</button>
-</form>
+</body>
+</html>
