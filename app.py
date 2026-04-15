@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect
 app = Flask(__name__)
-# Page d'accueil → redirige vers login
+# Stockage temporaire des messages
+messages = []
+# Page accueil → login
 @app.route('/')
 def home():
     return redirect('/login')
@@ -13,7 +15,14 @@ def login():
 # Page chat
 @app.route('/chat')
 def chat():
-    return render_template('chat.html')
+    return render_template('chat.html', messages=messages)
+# Envoi message
+@app.route('/send', methods=['POST'])
+def send():
+    message = request.form.get('message')
+    if message:
+        messages.append(message)
+    return redirect('/chat')
 # Page interface
 @app.route('/interface')
 def interface():
