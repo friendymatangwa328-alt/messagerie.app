@@ -1,0 +1,6 @@
+<h2>Liste des amis</h2>
+{% for u in users %}
+    {% if u != current %}
+        <a href="/chat/{{current}}/{{u}}">{{u}}</a><br>
+    {% endif %}
+{% endfor %}
