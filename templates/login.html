@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Login</title>
+</head>
 <body>
 <h2>Connexion</h2>
 <form method="POST">
-    <input name="username" placeholder="Nom"><br><br>
-    <input name="password" placeholder="Mot de passe"><br><br>
+    <input name="username" placeholder="Nom utilisateur" required><br><br>
+    <input name="password" type="password" placeholder="Mot de passe" required><br><br>
     <button>Se connecter</button>
 </form>
-<h3>Créer un compte</h3>
-<form action="/register" method="POST">
-    <input name="username" placeholder="Nom"><br><br>
-    <input name="password" placeholder="Mot de passe"><br><br>
-    <button>Créer compte</button>
-</form>
+<br>
+<a href="/register">Créer un compte</a>
 </body>
 </html>
