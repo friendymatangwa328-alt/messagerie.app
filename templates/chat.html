@@ -1,35 +1,50 @@
-from flask import Flask, render_template, request, redirect
-app = Flask(__name__)
-# Stockage temporaire des messages
-messages = []
-# Page accueil → login
-@app.route('/')
-def home():
-    return redirect('/login')
-# Page login
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        return redirect('/chat')
-    return render_template('login.html')
-# Page chat
-@app.route('/chat')
-def chat():
-    return render_template('chat.html', messages=messages)
-# Envoi message
-@app.route('/send', methods=['POST'])
-def send():
-    message = request.form.get('message')
-    if message:
-        messages.append(message)
-    return redirect('/chat')
-# Page interface
-@app.route('/interface')
-def interface():
-    return render_template('interface.html')
-# Page utilisateurs
-@app.route('/users')
-def users():
-    return render_template('users.html')
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=3000)
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f0f2f5;
+        }
+        .chat-box {
+            width: 400px;
+            margin: auto;
+            margin-top: 50px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .message {
+            background: #d1e7dd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        input {
+            width: 70%;
+            padding: 10px;
+        }
+        button {
+            padding: 10px;
+            background: green;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="chat-box">
+    <h2>Messagerie</h2>
+    <div>
+        {% for msg in messages %}
+            <div class="message">{{ msg }}</div>
+        {% endfor %}
+    </div>
+    <form action="/send" method="POST">
+        <input type="text" name="message" placeholder="Tape ton message">
+        <button type="submit">Envoyer</button>
+    </form>
+</div>
+</body>
+</html>
